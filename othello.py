@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import enum
+import struct
 from typing import List, Tuple
 from itertools import product
 
@@ -72,6 +73,7 @@ class Move(object):
 
 class Env(object):
     def __init__(self) -> None:
+        self.player = Player.BLACK
         self.board: Board = np.full((8, 8), Player.NONE, dtype="int32")
         self.history: List[Move] = []
         self.stack: List[Board] = []
@@ -82,6 +84,7 @@ class Env(object):
         return env
 
     def reset(self) -> Tuple[Player, npt.NDArray]:
+        self.player = Player.BLACK
         self.board[:] = Player.NONE
         self.board[3, 3] = Player.BLACK
         self.board[4, 3] = Player.WHITE
@@ -115,14 +118,18 @@ class Env(object):
         self.history.pop()
         self.board = self.stack.pop()
 
-    def step(self, move: Move) -> Tuple[Player, npt.NDArray]:
+    def step(self, move: Move) -> None:
         """Update othello board by a move"""
+        if move.player != self.player:
+            raise RuntimeError("Player in env and that in move do not match!!")
+
         # Store previous state
         self.history.append(move)
         self.stack.append(self.board.copy())
 
+        self.player = self.player.next()
         if move.is_pass():
-            return move.player.next(), self.board
+            return
 
         # Put an othello disk
         self.board[move.x, move.y] = move.player
@@ -159,10 +166,10 @@ class Env(object):
                         ny = ny - dy
                         self.board[nx, ny] = move.player
 
-        return move.player.next(), self.board
-
-    def legal_moves(self, player: Player) -> List[Move]:
+    def legal_moves(self, player: Player = Player.NONE) -> List[Move]:
         """List legal moves"""
+        if player == Player.NONE:
+            player = self.player
 
         moves = [Move(player, x, y) for x, y in product(range(8), range(8))]
         moves = list(filter(lambda m: self.is_legal_move(m), moves))
