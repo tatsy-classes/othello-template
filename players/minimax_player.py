@@ -25,7 +25,7 @@ scores = np.array(
 
 
 def minimax(env, move, depth, max_depth):
-    env.step(move)
+    env.update(move)
 
     if depth >= max_depth:
         score = move.player * np.sum(env.board * scores)
@@ -56,9 +56,6 @@ class MinimaxPlayer(BasePlayer):
 
     def play(self, env: Env) -> Move:
         moves = env.legal_moves()
-        if len(moves) == 0:
-            return Move.Pass(env.player)
-
         best_move = moves[0]
         best_score = -np.inf
         for move in moves:

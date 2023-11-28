@@ -87,7 +87,7 @@ class MatchServer(object):
                         break
 
                     move = pickle.loads(data)
-                    env.step(move)
+                    env.update(move)
                     time.sleep(0.001)
 
                 except Exception:

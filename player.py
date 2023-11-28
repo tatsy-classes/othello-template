@@ -14,11 +14,7 @@ class MyPlayer(BasePlayer):
 
     def play(self, env) -> Move:
         moves = env.legal_moves()
-        if len(moves) != 0:
-            move = random.choice(moves)
-        else:
-            move = Move.Pass(env.player)
-
+        move = random.choice(moves)
         return move
 
 
