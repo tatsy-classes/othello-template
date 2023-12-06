@@ -1,3 +1,4 @@
+import sys
 import time
 import argparse
 import threading
@@ -16,9 +17,9 @@ def match(f1, f2, n_match):
     thread.start()
     time.sleep(0.1)
 
-    p1 = subprocess.Popen(["python", f1], shell=False, stdout=subprocess.DEVNULL)
+    p1 = subprocess.Popen([sys.executable, f1], shell=False, stdout=subprocess.DEVNULL)
     time.sleep(0.1)
-    p2 = subprocess.Popen(["python", f2], shell=False, stdout=subprocess.DEVNULL)
+    p2 = subprocess.Popen([sys.executable, f2], shell=False, stdout=subprocess.DEVNULL)
     time.sleep(0.1)
 
     p1.communicate()

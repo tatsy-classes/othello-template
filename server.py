@@ -25,7 +25,7 @@ class MatchServer(object):
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.settimeout(1)
+        self.sock.settimeout(10)
         self.sock.bind((self.TCP_IP, self.TCP_PORT))
         self.sock.listen(2)
         self.print(f"listen port {self.TCP_PORT:d}")
@@ -55,6 +55,7 @@ class MatchServer(object):
             white_client.close()
             raise Exception("Client must send message 'ready'!!")
 
+        self.sock.settimeout(1)
         pbar = tqdm(range(n_match))
         for _ in pbar:
             self.print("Match start!")
@@ -74,13 +75,11 @@ class MatchServer(object):
                     client.sendall(bytes("go", "ascii"))
                     time.sleep(0.001)
 
-                    data = pickle.dumps(env)
+                    data = pickle.dumps(env.copy())
                     data_size = len(data)
 
                     client.sendall(int.to_bytes(data_size, 4, "little"))
-                    time.sleep(0.01)
                     client.sendall(data)
-                    time.sleep(0.001)
 
                     data = client.recv(self.BUF_SIZE)
                     if not data:
@@ -88,7 +87,6 @@ class MatchServer(object):
 
                     move = pickle.loads(data)
                     env.update(move)
-                    time.sleep(0.001)
 
                 except Exception:
                     black_client.close()

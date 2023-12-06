@@ -2,6 +2,7 @@ import sys
 import time
 import pickle
 import socket
+from io import BytesIO
 
 import colorama
 from server import MatchServer
@@ -63,6 +64,7 @@ class BasePlayer(object):
                 if not data:
                     break
 
+                bio = BytesIO()
                 env = pickle.loads(data)
                 move = self.play(env)
                 self.print(str(move))
