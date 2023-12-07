@@ -4,6 +4,7 @@ scipy
 matplotlib
 scikit-learn
 requests
+tqdm
 pytest
 colorama
 git+https://github.com/tatsy-classes/cothello.git@v1.0.0
