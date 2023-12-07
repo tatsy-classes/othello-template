@@ -1,2 +1,2 @@
 [tool.pytest.ini_options]
-addopts = "--tb=short -s test_ogura.py"
+addopts = "--tb=short -s test_othello.py"

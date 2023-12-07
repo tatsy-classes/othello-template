@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Level1",
+      "run": "pytest --path level1.py",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 10
+    },
+    {
+      "name": "Level2",
+      "run": "pytest --path level2.py",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 20
+    },
+    {
+      "name": "Level3",
+      "run": "pytest --path level3.py",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": 30
+    }
+  ]
+}

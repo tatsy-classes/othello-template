@@ -36,7 +36,8 @@ class MatchServer(object):
             print(msg, *args, **kwargs)
             sys.stdout.flush()
 
-    def run(self, n_match=1):
+    def run(self, n_match=1, verbose=False):
+        self.verbose = verbose
         black_client, black_addr = self.sock.accept()
         self.print("Got a connection from", black_addr)
         ready_msg = black_client.recv(self.BUF_SIZE).decode("ascii")
