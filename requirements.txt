@@ -1,0 +1,15 @@
+numpy
+pandas
+scipy
+matplotlib
+scikit-learn
+requests
+pytest
+colorama
+git+https://github.com/tatsy-classes/cothello.git@v1.0.0
+
+# tensorflow==2.14.0
+# keras
+# --find-links https://download.pytorch.org/whl/torch_stable.html
+# torch==2.0.1+cpu
+# torchvision==0.15.2+cpu
