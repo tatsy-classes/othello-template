@@ -13,7 +13,7 @@ from colorama import Fore
 class MatchServer(object):
     TCP_IP: str = "127.0.0.1"
     TCP_PORT: int = 8080
-    BUF_SIZE: int = 65536
+    BUF_SIZE: int = 262144
 
     def __init__(self):
         colorama.init()
