@@ -53,7 +53,6 @@ class BasePlayer(object):
                 while len(data) < data_size:
                     req_size = min(self.bufsize, data_size - len(data))
                     packet = self.sock.recv(req_size)
-                    time.sleep(0.001)
                     if not packet:
                         data = None
                         break
@@ -67,6 +66,6 @@ class BasePlayer(object):
                 move = self.play(env)
                 self.print(str(move))
                 self.sock.sendall(pickle.dumps(move))
-
+                time.sleep(0.001)
             else:
                 raise Exception("Unknown message received:", msg)

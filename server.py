@@ -80,7 +80,9 @@ class MatchServer(object):
                     data_size = len(data)
 
                     client.sendall(int.to_bytes(data_size, 4, "little"))
+                    time.sleep(0.001)
                     client.sendall(data)
+                    time.sleep(0.001)
 
                     data = client.recv(self.BUF_SIZE)
                     if not data:
