@@ -1,19 +1,45 @@
-import sys
-import time
 import pickle
 import socket
+import sys
 
-import othello
 import colorama
-from tqdm import tqdm
-from othello import Player
+import othello
 from colorama import Fore
+from othello import Player
+from tqdm.auto import tqdm
+
+
+def socket_send(sock: socket.socket, data: bytes) -> None:
+    size = len(data)
+    prefix = int.to_bytes(size, 4, "little")
+    try:
+        sock.sendall(prefix + data)
+    except socket.error as e:
+        print(str(e))
+
+
+def socket_recv(sock: socket.socket, bufsize: int) -> bytes:
+    data = sock.recv(4)
+    size = int.from_bytes(data, "little")
+
+    data = b""
+    while len(data) < size:
+        try:
+            req_size = min(bufsize, size - len(data))
+            packet = sock.recv(req_size)
+        except socket.error as e:
+            print(str(e))
+            break
+
+        data += packet
+
+    return data
 
 
 class MatchServer(object):
     TCP_IP: str = "127.0.0.1"
     TCP_PORT: int = 8080
-    BUF_SIZE: int = 65536
+    BUF_SIZE: int = 1024
 
     def __init__(self):
         colorama.init()
@@ -24,8 +50,8 @@ class MatchServer(object):
         self.n_draw = 0
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.settimeout(5)
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.settimeout(10)
         self.sock.bind((self.TCP_IP, self.TCP_PORT))
         self.sock.listen(2)
         self.print(f"listen port {self.TCP_PORT:d}")
@@ -40,7 +66,7 @@ class MatchServer(object):
         self.verbose = verbose
         black_client, black_addr = self.sock.accept()
         self.print("Got a connection from", black_addr)
-        ready_msg = black_client.recv(self.BUF_SIZE).decode("ascii")
+        ready_msg = socket_recv(black_client, self.BUF_SIZE).decode("ascii")
         if ready_msg == "ready":
             self.print("Black is ready!")
         else:
@@ -49,7 +75,7 @@ class MatchServer(object):
 
         white_client, white_addr = self.sock.accept()
         self.print("Got a connection from", white_addr)
-        ready_msg = white_client.recv(self.BUF_SIZE).decode("ascii")
+        ready_msg = socket_recv(white_client, self.BUF_SIZE).decode("ascii")
         if ready_msg == "ready":
             self.print("White is ready!")
         else:
@@ -57,11 +83,17 @@ class MatchServer(object):
             raise Exception("Client must send message 'ready'!!")
 
         self.sock.settimeout(1)
-        pbar = tqdm(range(n_match))
-        for _ in pbar:
+        black_client.settimeout(1)
+        white_client.settimeout(1)
+
+        print("")
+        for n in range(n_match):
             self.print("Match start!")
             env = othello.make()
             env.reset()
+
+            socket_send(black_client, bytes("reset", "ascii"))
+            socket_send(white_client, bytes("reset", "ascii"))
 
             while not env.is_done():
                 try:
@@ -73,23 +105,16 @@ class MatchServer(object):
                     else:
                         raise Exception("Unknown player!")
 
-                    client.sendall(bytes("go", "ascii"))
-                    time.sleep(0.001)
-
+                    socket_send(client, bytes("go", "ascii"))
                     data = pickle.dumps(env.copy())
-                    data_size = len(data)
+                    socket_send(client, data)
 
-                    client.sendall(int.to_bytes(data_size, 4, "little"))
-                    client.sendall(data)
-
-                    data = client.recv(self.BUF_SIZE)
-                    if not data:
-                        break
-
+                    data = socket_recv(client, self.BUF_SIZE)
                     move = pickle.loads(data)
                     env.update(move)
 
-                except Exception:
+                except Exception as e:
+                    print(str(e))
                     black_client.close()
                     white_client.close()
                     self.sock.close()
@@ -99,21 +124,34 @@ class MatchServer(object):
             nw = env.count(Player.WHITE)
             if nb > nw:
                 self.n_black += 1
+                print("o", end="", flush=True)
                 self.print("Black win!")
             elif nb < nw:
                 self.n_white += 1
+                print("x", end="", flush=True)
                 self.print("White win!")
             else:
                 self.n_draw += 1
+                print("-", end="", flush=True)
                 self.print("Draw!")
 
-            pbar.set_description(
-                f"B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}"
-            )
+            if (n + 1) % 10 == 0:
+                print("", flush=True)
+                print(
+                    f"B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}",
+                    flush=True,
+                )
 
-        black_client.sendall(bytes("finish", "ascii"))
+        print("==========", flush=True)
+        print(
+            f"[RESULT] B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}",
+            flush=True,
+        )
+        print("==========", flush=True)
+
+        socket_send(black_client, bytes("finish", "ascii"))
         black_client.close()
-        white_client.sendall(bytes("finish", "ascii"))
+        socket_send(white_client, bytes("finish", "ascii"))
         white_client.close()
         self.sock.close()
 

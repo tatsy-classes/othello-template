@@ -6,7 +6,7 @@
       "input": "",
       "output": "",
       "comparison": "exact",
-      "timeout": 10,
+      "timeout": 1,
       "points": 10
     },
     {
@@ -15,7 +15,7 @@
       "input": "",
       "output": "",
       "comparison": "exact",
-      "timeout": 10,
+      "timeout": 2,
       "points": 20
     },
     {
@@ -24,7 +24,7 @@
       "input": "",
       "output": "",
       "comparison": "exact",
-      "timeout": 10,
+      "timeout": 3,
       "points": 30
     }
   ]

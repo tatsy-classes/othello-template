@@ -1,28 +1,29 @@
-import sys
-import time
 import pickle
 import socket
-from io import BytesIO
+import sys
 
 import colorama
-from server import MatchServer
-from othello import Env, Move
 from colorama import Fore
+from othello import Env, Move
+
+from server import MatchServer, socket_recv, socket_send
 
 
 class BasePlayer(object):
     def __init__(self):
-        colorama.init()
+        colorama.init(strip=False)
+        self.verbose = False
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.settimeout(1)
         self.sock.connect((MatchServer.TCP_IP, MatchServer.TCP_PORT))
+        self.sock.settimeout(5)
         self.bufsize = MatchServer.BUF_SIZE
         self.reset()
 
     def print(self, msg, *args, **kwargs):
-        print(Fore.GREEN + "[CLIENT]: " + Fore.RESET, end="")
-        print(msg, *args, **kwargs)
-        sys.stdout.flush()
+        if self.verbose:
+            print(Fore.GREEN + "[CLIENT]: " + Fore.RESET, end="")
+            print(msg, *args, **kwargs)
+            sys.stdout.flush()
 
     def reset(self) -> None:
         pass
@@ -30,45 +31,25 @@ class BasePlayer(object):
     def play(self, env: Env) -> Move:
         raise NotImplementedError()
 
-    def run(self):
-        self.sock.send(bytes("ready", "ascii"))
+    def run(self, verbose=False):
+        self.verbose = verbose
+        socket_send(self.sock, bytes("ready", "ascii"))
         while True:
-            msg_data = self.sock.recv(self.bufsize)
-            if not msg_data:
-                break
-
-            msg = msg_data.decode("ascii")
+            msg = socket_recv(self.sock, self.bufsize).decode("ascii")
             if msg == "finish":
+                self.print("Finish!")
                 break
 
             elif msg == "reset":
+                self.print("Reset!")
                 self.reset()
 
             elif msg == "go":
-                data = self.sock.recv(4)
-                if not data:
-                    break
-
-                data_size = int.from_bytes(data, "little")
-                data = b""
-                while len(data) < data_size:
-                    req_size = min(self.bufsize, data_size - len(data))
-                    packet = self.sock.recv(req_size)
-                    time.sleep(0.001)
-                    if not packet:
-                        data = None
-                        break
-
-                    data += packet
-
-                if not data:
-                    break
-
-                bio = BytesIO()
+                data = socket_recv(self.sock, self.bufsize)
                 env = pickle.loads(data)
                 move = self.play(env)
-                self.print(str(move))
-                self.sock.sendall(pickle.dumps(move))
+                data = pickle.dumps(move)
+                socket_send(self.sock, data)
 
             else:
-                raise Exception("Unknown message received:", msg)
+                raise Exception(f"Unknown message received: '{msg:s}'")
