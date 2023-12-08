@@ -1,7 +1,6 @@
 import os
 
 import pytest
-
 from match import match
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +11,7 @@ def check(path: str) -> None:
     if not os.path.exists(path):
         raise FileExistsError("File not found:" + path)
 
-    b_win, w_win, _ = match(MY_FILE, path, 100, True)
+    b_win, w_win, _ = match(MY_FILE, path, 100, False)
     assert (b_win - w_win) >= 20, "Your othello AI is not quite strong..."
 
 
