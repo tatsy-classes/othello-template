@@ -86,8 +86,8 @@ class MatchServer(object):
         black_client.settimeout(1)
         white_client.settimeout(1)
 
-        pbar = tqdm(range(n_match))
-        for _ in pbar:
+        print("")
+        for n in range(n_match):
             self.print("Match start!")
             env = othello.make()
             env.reset()
@@ -124,15 +124,30 @@ class MatchServer(object):
             nw = env.count(Player.WHITE)
             if nb > nw:
                 self.n_black += 1
+                print("o", end="", flush=True)
                 self.print("Black win!")
             elif nb < nw:
                 self.n_white += 1
+                print("x", end="", flush=True)
                 self.print("White win!")
             else:
                 self.n_draw += 1
+                print("-", end="", flush=True)
                 self.print("Draw!")
 
-            pbar.set_description(f"B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}")
+            if (n + 1) % 10 == 0:
+                print("", flush=True)
+                print(
+                    f"B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}",
+                    flush=True,
+                )
+
+        print("==========", flush=True)
+        print(
+            f"[RESULT] B:{self.n_black:d}, W:{self.n_white:d}, D:{self.n_draw}",
+            flush=True,
+        )
+        print("==========", flush=True)
 
         socket_send(black_client, bytes("finish", "ascii"))
         black_client.close()

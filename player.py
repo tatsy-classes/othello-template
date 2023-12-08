@@ -1,6 +1,8 @@
+import argparse
 import random
 
 from othello import Move
+
 from players.base import BasePlayer
 
 
@@ -9,7 +11,6 @@ class MyPlayer(BasePlayer):
         super(MyPlayer, self).__init__()
 
     def reset(self) -> None:
-        # Nothing to do
         pass
 
     def play(self, env) -> Move:
@@ -19,5 +20,9 @@ class MyPlayer(BasePlayer):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Othello player")
+    parser.add_argument("-v", "--verbose", action="store_true")
+    args = parser.parse_args()
+
     player = MyPlayer()
-    player.run()
+    player.run(args.verbose)
