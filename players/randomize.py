@@ -1,10 +1,12 @@
+import argparse
 import os
-import sys
 import random
-
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+import sys
 
 from othello import Env, Move
+
+PARENT_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(PARENT_DIR)
 from players.base import BasePlayer
 
 
@@ -23,5 +25,9 @@ class RandomPlayer(BasePlayer):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Othello player")
+    parser.add_argument("-v", "--verbose", action="store_true")
+    args = parser.parse_args()
+
     player = RandomPlayer()
-    player.run()
+    player.run(args.verbose)
