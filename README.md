@@ -2,7 +2,11 @@
 ===
 
 <details>
-<summary><h2>準備 (全課題共通)</h2></summary>
+<summary>
+    
+## 準備 (全課題共通)
+
+</summary>
 
 ### GitHubのアカウントを作成
 
