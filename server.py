@@ -1,11 +1,11 @@
+import sys
 import pickle
 import socket
-import sys
 
-import colorama
 import othello
-from colorama import Fore
+import colorama
 from othello import Player
+from colorama import Fore
 from tqdm.auto import tqdm
 
 
@@ -112,6 +112,16 @@ class MatchServer(object):
                     data = socket_recv(client, self.BUF_SIZE)
                     move = pickle.loads(data)
                     env.update(move)
+
+                    if move.player == Player.BLACK:
+                        self.print("BLACK")
+                    elif move.player == Player.WHITE:
+                        self.print("WHITE")
+                    else:
+                        self.print("PASS")
+
+                    if self.verbose:
+                        print(env)
 
                 except Exception as e:
                     print(str(e))

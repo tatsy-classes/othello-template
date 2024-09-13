@@ -1,7 +1,12 @@
 オセロプレイヤーの作成
 ===
 
+<details>
+<summary>
+    
 ## 準備 (全課題共通)
+
+</summary>
 
 ### GitHubのアカウントを作成
 
@@ -46,30 +51,32 @@ ssh-keygen -t rsa -b 4096
 
 公開鍵のファイル`id_rsa.pub`を何らかのエディタで開いて、その内容をコピーする。GitHubに移動し、右上のユーザアイコンをクリックし「Settings」を選ぶ。その後、「SSH and GPG keys」を左のメニューから選び、「SSH Keys」の右にある「New SSH key」ボタンを押して、現れるテキストボックスに先ほど`id_rsa.pub`からコピーした内容を貼り付けて、「Add SSH key」を押す。
 
+</details>
+
 ## 課題テンプレートのダウンロード
 
 ### 課題用レポジトリの作成
 
-講義中に指示する課題作成用URLにアクセスし、手順に従うと、課題用のレポジトリである`ogura-agent-username`が作成される (`username`の部分は各自のGitHubアカウント名に読み替えること)。
+講義中に指示する[GitHub Classroom](https://classroom.github.com/classrooms)の課題作成用URLにアクセスし、手順に従うと、課題用のレポジトリである`othello-player-username`が作成される (`username`の部分は各自のGitHubアカウント名に読み替えること)。
 
 ### レポジトリのクローン
 
-再び、ローカル環境に戻り、WindowsならコマンドプロンプトかPowerShell, Macならターミナルを開いて、Gitレポジトリをクローンする。正しく、SSHの公開鍵が登録されていれば、以下のコマンドでレポジトリがクローンされる。
+再び、ローカル環境に戻り、WindowsならコマンドプロンプトかPowerShell, Macならターミナルを開いて、**Gitレポジトリをクローン**する。正しく、SSHの公開鍵が登録されていれば、以下のコマンドでレポジトリがクローンできる。
 
 ```shell
 # Gitレポジトリのクローン
-git clone git@github.com:tatsy-classes/ogura-agent-username.git
+git clone git@github.com:tatsy-classes/othello-player-username.git
 ```
 
 ### 仮想環境の作成
 
-Anacondaを使って適当な課題用の仮想環境を作成し、その環境にPipを用いて必要なモジュールをインストールする。GitHub Actions上の自動採点プログラムはPython 3.9を用いているので、Anacondaの仮想環境もPython 3.9で作成すること。
+Anacondaを使って適当な課題用の仮想環境を作成し、その環境にPipを用いて必要なモジュールをインストールする。**GitHub Actions上の自動採点プログラムはPython 3.9を用いている**ので、Anacondaの仮想環境もPython 3.9で作成すること。
 
 ```shell
 # 仮想環境の作成
-conda create -n ogura python=3.9
+conda create -n othello python=3.9
 # 仮想環境の切り替え
-conda activate ogura
+conda activate othello
 # モジュールのインストール
 pip install -r requirements.txt
 ```
@@ -78,43 +85,51 @@ pip install -r requirements.txt
 
 ### ソルバー関数の編集
 
-課題用レポジトリ (本レポジトリ)に含まれる `ogura.py`を編集(**ファイル名は変更しないこと**)して、課題の目的が達成されるようなプログラムに修正する。編集するべき`solve`関数は以下のような定義になっている。
+課題用レポジトリに含まれる `player.py`を編集(**ファイル名は変更しないこと**)して、より強いオセロAIとなるようにプログラムに修正する。編集するべき`MyPlayer`クラスは以下のような定義になっている。
 
 ```python
-def solve(image: NDArray[np.uint8], poems: List[str], level: int) -> List[int]:
-    """
-    Inputs:
-      image: input image
-      poems: list of ogura poems
-      level: difficulty level of this problem (1-3)
-    Outputs:
-      answer: list of determination status
-        0: specific poem does not exist in the image
-        1: possible poem can exist in the image, but there remains other possible poems
-        2: the specific poem exist in the card, and there is no other possible poems
-    """
-    answer = [0] * len(poems)
-    return answer
+import random
+
+from othello import Env, Move, Player
+from players.base import BasePlayer
+
+
+class MyPlayer(BasePlayer):
+    def __init__(self):
+        pass
+
+    def reset(self):
+        """
+        ゲーム開始時に行いたい処理を記述
+        """
+
+    def play(self, env: Env) -> Move:
+        """
+        この関数を主に更新する、以下はランダムに着手する例
+        """
+        moves = env.legal_moves()
+        return random.choice(moves)
 ```
 
 ### ローカルでのテスト方法
 
-`ogura.py`が編集できたら、最初にローカル環境でテストを実施する。`data`ディレクトリの中に1枚ずつサンプルの画像が入っているのでそれを利用してよい。
-
-また、講義の参加者には`data/samples.zip`の展開用パスワードを指示するので、このZIPファイルに含まれる各レベル5枚のサンプル画像も合わせて使用すること。ZIPファイルを展開すると`level1`から`level3`のフォルダが得られるので、これを`data/level1`から`data/level3`にそれぞれ上書きする。
-
-準備ができたら、`pytest`を使ってテストを実行する。
+`othello.py`が編集できたら、最初にローカル環境でテストを実施する。テストランナには`pytest`を用いるが、今回は対戦相手のスクリプトファイルを`--path`に指定する形でテストを実行する。
 
 ```shell
-# 汎用的なテスト
-pytest 
-# 実行状況を細かく表示する場合
-pytest --tb=long
+pytest --path players/randomoize.py
 ```
+
+また、`match.py`を用いると、自分で作成したプレイヤー同士を対戦させることもできる。自分で作成したプレイヤーのスクリプトファイルが`player.py`と`opponent.py`であるとしたとき、以下のコマンドで対戦が実行される。
+
+```shell
+python match.py --file1 player.py --file2 opponent.py --n_match 100 --verbose
+```
+
+最後の二つの引数`--n_match 100`ならびに`--verbose`の指定は任意だが、前者はテストプレイの回数を、後者は詳細な実行過程を表示するために用いる。
 
 ### サーバー上でのテスト方法
 
-`ogura.py`に行った編集をGitHub上のレポジトリにコミット、プッシュすると、GitHub Actionsの機能を用いて自動採点が実施される。変更をコミット、プッシュするためのコマンドの一例は以下の通り。
+`player.py`に行った編集をGitHub上のレポジトリにコミット、プッシュすると、GitHub Actionsの機能を用いて自動採点が実施される。変更をコミット、プッシュするためのコマンドの一例は以下の通り。
 
 ```shell
 # リポジトリのルートディレクトリで以下を実行する
@@ -131,9 +146,9 @@ git commit -m "コミットコメント (適宜更新内容を入力)"
 git push origin master
 ```
 
-**注意:** 作成したデータセットはレポジトリのファイルサイズ制限に引っかかるのでアップロードしないこと。
+**注意:** 作成したデータセット等はレポジトリのファイルサイズ制限に引っかかるのでアップロードしないこと。
 
 ### 実行時間の制約
 
-実行時間は1問当たり最大1分とする。それ以上が経過すると、自動的にプログラムが終了するので注意すること。
+テストコードでは各レベルのAIと20回ずつ対戦が行われる。実行時間にはレベル1なら1分、レベル2なら2分、レベル3なら3分の制約が設けられている。それ以上が経過すると、自動的にプログラムが終了するので注意すること。
 
