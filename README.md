@@ -3,8 +3,9 @@
 
 <details>
 <summary>
-    
-## 準備 (全課題共通)
+
+準備 (全課題共通)
+---
 
 </summary>
 
@@ -53,7 +54,8 @@ ssh-keygen -t rsa -b 4096
 
 </details>
 
-## 課題テンプレートのダウンロード
+課題テンプレートのダウンロード
+---
 
 ### 課題用レポジトリの作成
 
@@ -70,18 +72,20 @@ git clone git@github.com:tatsy-classes/othello-player-username.git
 
 ### 仮想環境の作成
 
-Anacondaを使って適当な課題用の仮想環境を作成し、その環境にPipを用いて必要なモジュールをインストールする。**GitHub Actions上の自動採点プログラムはPython 3.9を用いている**ので、Anacondaの仮想環境もPython 3.9で作成すること。
+適当な方法で開発用の仮想環境を作成し、Pipで必要なモジュールをインストールする。以下では`.venv`というディレクトリにvenvの仮想環境を作る方法を示す。
 
 ```shell
 # 仮想環境の作成
-conda create -n othello python=3.9
+python -m venv .venv
 # 仮想環境の切り替え
-conda activate othello
+.venv/Scripts/activate  # Windows
+source .venv/bin/activate  # Mac/Linux
 # モジュールのインストール
 pip install -r requirements.txt
 ```
 
-## 課題の作成
+課題の作成
+---
 
 ### ソルバー関数の編集
 
