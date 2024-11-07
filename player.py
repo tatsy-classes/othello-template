@@ -1,5 +1,4 @@
 import random
-import argparse
 
 from othello import Move
 from players.base import BasePlayer
