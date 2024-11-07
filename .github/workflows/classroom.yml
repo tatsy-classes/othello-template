@@ -1,4 +1,4 @@
-name: GitHub Classroom Workflow
+name: Autograding othello exercises
 
 on:
   - push
@@ -10,21 +10,59 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Autograding
+  run-autograding-tests:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-classroom[bot]'
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.10"
           cache: "pip"
+
       - name: Install dependencies
         run: |
-          pip install --quiet -r requirements.txt
+          python -m pip install --quiet --upgrade pip
+          python -m pip install --quiet -r requirements.txt
+
       - name: Generate problems
         uses: tatsy-classes/othello-autograding@main
-      - name: Autograding
-        uses: education/autograding@v1
+
+      - name: Level1
+        id: level1
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1
+          command: pytest --path level1.py
+          timeout: 1
+          max-score: 10
+
+      - name: Level2
+        id: level2
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2
+          command: pytest --path level2.py
+          timeout: 1
+          max-score: 20
+
+      - name: Level3
+        id: level3
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3
+          command: pytest --path level3.py
+          timeout: 1
+          max-score: 30
+
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        env:
+          LEVEL1_RESULTS: "${{ steps.level1.outputs.result }}"
+          LEVEL2_RESULTS: "${{ steps.level2.outputs.result }}"
+          LEVEL3_RESULTS: "${{ steps.level3.outputs.result }}"
+        with:
+          runners: level1,level2,level3
+
+

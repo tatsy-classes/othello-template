@@ -1,7 +1,7 @@
-import argparse
 import os
-import random
 import sys
+import random
+import argparse
 
 from othello import Env, Move
 
@@ -22,12 +22,3 @@ class RandomPlayer(BasePlayer):
         moves = env.legal_moves()
         move = random.choice(moves)
         return move
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Othello player")
-    parser.add_argument("-v", "--verbose", action="store_true")
-    args = parser.parse_args()
-
-    player = RandomPlayer()
-    player.run(args.verbose)

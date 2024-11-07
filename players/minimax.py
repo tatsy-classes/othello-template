@@ -1,6 +1,6 @@
-import argparse
 import os
 import sys
+import argparse
 
 import numpy as np
 from othello import Env, Move
@@ -65,12 +65,3 @@ class MinimaxPlayer(BasePlayer):
                 best_score = score
 
         return best_move
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Othello player")
-    parser.add_argument("-v", "--verbose", action="store_true")
-    args = parser.parse_args()
-
-    player = MinimaxPlayer()
-    player.run(args.verbose)
