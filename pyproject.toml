@@ -1,2 +1,28 @@
+[tool.isort]
+profile = "black"
+length_sort = true
+line_length = 99
+
+[tool.mypy]
+python_version = "3.10"
+follow_imports = "silent"
+disallow_any_generics = true
+strict_optional = true
+check_untyped_defs = true
+allow_redefinition = true
+
+[tool.flake8]
+max-line-length = 99
+ignore = "Q000,E127,E203,E402,W503,W504"
+
+[tool.black]
+target-version = ["py310"]
+line-length = 99
+
+
 [tool.pytest.ini_options]
-addopts = "--tb=no -s test_othello.py"
+minversion = "8"
+xfail_strict = true
+addopts = ["--tb=short", "--capture=no", "-vv"]
+testpaths = ["test_othello.py"]
+log_cli_level = "DEBUG"
