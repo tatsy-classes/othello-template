@@ -1,6 +1,6 @@
 import random
 
-from othello import Move
+from othello import Action
 from players.base import BasePlayer
 
 
@@ -11,7 +11,7 @@ class MyPlayer(BasePlayer):
     def reset(self) -> None:
         pass
 
-    def play(self, env) -> Move:
-        moves = env.legal_moves()
-        move = random.choice(moves)
-        return move
+    def play(self, env) -> Action:
+        actions = env.legal_actions()
+        action = random.choice(actions)
+        return action

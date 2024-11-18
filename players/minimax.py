@@ -3,7 +3,7 @@ import sys
 import argparse
 
 import numpy as np
-from othello import Env, Move
+from othello import Env, Action
 
 PARENT_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(PARENT_DIR)
@@ -24,24 +24,27 @@ scores = np.array(
 )
 
 
-def minimax(env, move, depth, max_depth):
-    env.update(move)
-
-    if depth >= max_depth:
-        score = move.player * np.sum(env.board * scores)
+def score_fn(env: Env) -> int:
+    if env.player.is_black():
+        return np.sum(env.board * scores)
     else:
-        # Calculate best score for opponent
-        best_score = -np.inf
-        for next_move in env.legal_moves():
-            score = minimax(env, next_move, depth + 1, max_depth)
-            if best_score < score:
-                best_score = score
+        return -np.sum(env.board * scores)
 
-        # The best for opponent means negative for the player
-        score = -best_score
 
-    env.undo()
-    return score
+def minimax(env, move, depth) -> int:
+    if env.is_done() or depth == 0:
+        return -score_fn(env)
+
+    actions = env.legal_actions()
+    best_score = 0
+    for action in actions:
+        env.update(action)
+        score = minimax(env, action, depth - 1)
+        env.undo()
+
+        best_score = max(best_score, score)
+
+    return -best_score
 
 
 class MinimaxPlayer(BasePlayer):
@@ -51,17 +54,14 @@ class MinimaxPlayer(BasePlayer):
         super(MinimaxPlayer, self).__init__()
 
     def reset(self) -> None:
-        # Nothing to do
         pass
 
-    def play(self, env: Env) -> Move:
-        moves = env.legal_moves()
-        best_move = moves[0]
-        best_score = -np.inf
-        for move in moves:
-            score = minimax(env, move, 0, self.MAX_DEPTH)
-            if best_score < score:
-                best_move = move
-                best_score = score
+    def play(self, env: Env) -> Action:
+        actions = env.legal_actions()
+        scores = np.zeros(len(actions), dtype="float64")
+        for i, action in enumerate(actions):
+            env.update(action)
+            scores[i] = minimax(env, action, self.MAX_DEPTH)
+            env.undo()
 
-        return best_move
+        return actions[np.argmax(scores)]

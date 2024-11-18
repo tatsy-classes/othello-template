@@ -3,7 +3,7 @@ import sys
 import random
 import argparse
 
-from othello import Env, Move
+from othello import Env, Action
 
 PARENT_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
 sys.path.append(PARENT_DIR)
@@ -15,10 +15,9 @@ class RandomPlayer(BasePlayer):
         super(RandomPlayer, self).__init__()
 
     def reset(self) -> None:
-        # Nothing to do
         pass
 
-    def play(self, env: Env) -> Move:
-        moves = env.legal_moves()
-        move = random.choice(moves)
-        return move
+    def play(self, env: Env) -> Action:
+        actions = env.legal_actions()
+        action = random.choice(actions)
+        return action

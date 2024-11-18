@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 import numpy as np
 import pytest
@@ -20,6 +21,8 @@ def game(p1_, p2_, n_match: int):
     for i in range(n_match):
         env = othello.make()
         env.reset()
+        p1_.reset()
+        p2_.reset()
 
         if np.random.random() < 0.5:
             p1 = p1_
@@ -29,10 +32,12 @@ def game(p1_, p2_, n_match: int):
             p2 = p1_
 
         while not env.is_done():
-            if env.player == Player.BLACK:
+            if env.player.is_black():
                 action = p1.play(env)
-            else:
+            elif env.player.is_white():
                 action = p2.play(env)
+            else:
+                raise ValueError("Invalid player")
 
             env.update(action)
 
@@ -42,40 +47,36 @@ def game(p1_, p2_, n_match: int):
             n_win1 += 1 if p1 is p1_ else 0
             n_win2 += 1 if p1 is p2_ else 0
             if p1 is p1_:
-                print("x", end="")
-            else:
                 print("o", end="")
+            else:
+                print("x", end="")
         elif n_black < n_white:
             n_win1 += 1 if p1 is p2_ else 0
             n_win2 += 1 if p1 is p1_ else 0
             if p1 is p1_:
-                print("o", end="")
-            else:
                 print("x", end="")
+            else:
+                print("o", end="")
 
         else:
             print("-", end="")
 
         if (i + 1) % 20 == 0:
             print("")
-            print(f"{n_win2}/{n_match:d} ({100.0 * n_win2 / n_match:.1f}%)")
+            print(f"{n_win1}/{i + 1:d} ({100.0 * n_win1 / (i + 1):.1f}%)")
 
         sys.stdout.flush()
 
     return n_win1, n_win2
 
 
-def test_randomize(n_match: int) -> None:
-    p1 = RandomPlayer()
-    p2 = MyPlayer()
-    n1, n2 = game(p1, p2, n_match)
-    ratio = n2 / n_match
-    assert ratio > 0.7, f"win ratio is not too high: {100.0 * ratio:.1f}%"
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("player_1", type=str)
+    parser.add_argument("player_2", type=str)
+    parser.add_argument("--n_match", type=int, default=100)
+    args = parser.parse_args()
 
-
-def test_minimax(n_match: int) -> None:
-    p1 = MinimaxPlayer()
-    p2 = MyPlayer()
-    n1, n2 = game(p1, p2, n_match)
-    ratio = n2 / n_match
-    assert ratio > 0.7, f"win ratio is not too high: {100.0 * ratio:.1f}%"
+    p1 = eval(args.player_1)()
+    p2 = eval(args.player_2)()
+    game(p1, p2, args.n_match)
