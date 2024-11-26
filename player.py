@@ -1,5 +1,4 @@
-import random
-
+import numpy as np
 from othello import Action
 from players.base import BasePlayer
 
@@ -13,5 +12,5 @@ class MyPlayer(BasePlayer):
 
     def play(self, env) -> Action:
         actions = env.legal_actions()
-        action = random.choice(actions)
+        action = np.random.choice(actions)
         return action

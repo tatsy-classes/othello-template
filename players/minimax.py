@@ -1,13 +1,9 @@
-import os
-import sys
-import argparse
+import time
 
 import numpy as np
-from othello import Env, Action
+from othello import Env, Action, Player
 
-PARENT_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
-sys.path.append(PARENT_DIR)
-from players.base import BasePlayer
+from .base import BasePlayer
 
 scores = np.array(
     [
@@ -20,35 +16,44 @@ scores = np.array(
         [-20, -40, -5, -5, -5, -5, -40, -20],
         [120, -20, 20, 5, 5, 20, -20, 120],
     ],
-    dtype="int32",
+    dtype="float64",
 )
 
 
-def score_fn(env: Env) -> int:
-    if env.player.is_black():
+def score_fn(env: Env, current_player: Player) -> int:
+    if current_player.is_black():
         return np.sum(env.board * scores)
-    else:
+    elif current_player.is_white():
         return -np.sum(env.board * scores)
+    else:
+        raise ValueError("Invalid player")
 
 
-def minimax(env, move, depth) -> int:
+def minimax(env, current_player, depth) -> float:
     if env.is_done() or depth == 0:
-        return -score_fn(env)
+        return score_fn(env, current_player)
 
     actions = env.legal_actions()
-    best_score = 0
-    for action in actions:
-        env.update(action)
-        score = minimax(env, action, depth - 1)
-        env.undo()
+    if env.player == current_player:
+        best_score = -np.inf
+        for action in actions:
+            env.update(action)
+            score = minimax(env, current_player, depth - 1)
+            env.undo()
+            best_score = max(best_score, score)
+    else:
+        best_score = np.inf
+        for action in actions:
+            env.update(action)
+            score = minimax(env, current_player, depth - 1)
+            env.undo()
+            best_score = min(best_score, score)
 
-        best_score = max(best_score, score)
-
-    return -best_score
+    return best_score
 
 
 class MinimaxPlayer(BasePlayer):
-    MAX_DEPTH = 2
+    TIME_LIMIT = 1.0e-2
 
     def __init__(self):
         super(MinimaxPlayer, self).__init__()
@@ -57,11 +62,23 @@ class MinimaxPlayer(BasePlayer):
         pass
 
     def play(self, env: Env) -> Action:
+        current_player = env.player
         actions = env.legal_actions()
-        scores = np.zeros(len(actions), dtype="float64")
-        for i, action in enumerate(actions):
-            env.update(action)
-            scores[i] = minimax(env, action, self.MAX_DEPTH)
-            env.undo()
 
-        return actions[np.argmax(scores)]
+        best_action = actions[0]
+        best_score = -np.inf
+        max_depth = 0
+        start_time = time.perf_counter()
+        while time.perf_counter() - start_time < self.TIME_LIMIT:
+            for i, action in enumerate(actions):
+                env.update(action)
+                v = minimax(env, current_player, max_depth)
+                env.undo()
+
+                if best_score < v:
+                    best_score = v
+                    best_action = action
+
+            max_depth += 1
+
+        return best_action

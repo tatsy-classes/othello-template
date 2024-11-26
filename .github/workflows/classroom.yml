@@ -19,50 +19,305 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-          cache: "pip"
+
+      - name: Restore from cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
       - name: Install dependencies
         run: |
-          python -m pip install --quiet --upgrade pip
-          python -m pip install --quiet -r requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Generate problems
         uses: tatsy-classes/othello-autograding@main
 
-      - name: Level1
-        id: level1
-        uses: education/autograding-command-grader@v1
+      - name: Save cache
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        id: cache-save
+        uses: actions/cache/save@v4
         with:
-          test-name: Level1
-          command: pytest --path level1.py
-          timeout: 1
-          max-score: 10
+          path: ~/.cache/pip
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
-      - name: Level2
-        id: level2
+      - name: Level1-1
+        id: level101
         uses: education/autograding-command-grader@v1
         with:
-          test-name: Level2
-          command: pytest --path level2.py
-          timeout: 1
-          max-score: 20
+          test-name: Level1-1
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-2
+        id: level102
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-2
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-3
+        id: level103
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-3
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-4
+        id: level104
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-4
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-5
+        id: level105
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-5
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-6
+        id: level106
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-6
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-7
+        id: level107
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-7
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-8
+        id: level108
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-8
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-9
+        id: level109
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-9
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
+      - name: Level1-10
+        id: level110
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level1-10
+          command: pytest -k level1 -N 1
+          timeout: 0.25
+          max-score: 1
 
-      - name: Level3
-        id: level3
+      - name: Level2-1
+        id: level201
         uses: education/autograding-command-grader@v1
         with:
-          test-name: Level3
-          command: pytest --path level3.py
-          timeout: 1
-          max-score: 30
+          test-name: Level2-1
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-2
+        id: level202
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-2
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-3
+        id: level203
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-3
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-4
+        id: level204
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-4
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-5
+        id: level205
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-5
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-6
+        id: level206
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-6
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-7
+        id: level207
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-7
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-8
+        id: level208
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-8
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-9
+        id: level209
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-9
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+      - name: Level2-10
+        id: level210
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level2-10
+          command: pytest -k level2 -N 1
+          timeout: 0.25
+          max-score: 2
+
+      - name: Level3-1
+        id: level301
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-1
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-2
+        id: level302
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-2
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-3
+        id: level303
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-3
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-4
+        id: level304
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-4
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-5
+        id: level305
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-5
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-6
+        id: level306
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-6
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-7
+        id: level307
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-7
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-8
+        id: level308
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-8
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-9
+        id: level309
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-9
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
+      - name: Level3-10
+        id: level310
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: Level3-10
+          command: pytest -k level3 -N 1
+          timeout: 0.25
+          max-score: 3
 
       - name: Autograding Reporter
         uses: education/autograding-grading-reporter@v1
         env:
-          LEVEL1_RESULTS: "${{ steps.level1.outputs.result }}"
-          LEVEL2_RESULTS: "${{ steps.level2.outputs.result }}"
-          LEVEL3_RESULTS: "${{ steps.level3.outputs.result }}"
+          LEVEL101_RESULTS: "${{ steps.level101.outputs.result }}"
+          LEVEL102_RESULTS: "${{ steps.level102.outputs.result }}"
+          LEVEL103_RESULTS: "${{ steps.level103.outputs.result }}"
+          LEVEL104_RESULTS: "${{ steps.level104.outputs.result }}"
+          LEVEL105_RESULTS: "${{ steps.level105.outputs.result }}"
+          LEVEL106_RESULTS: "${{ steps.level106.outputs.result }}"
+          LEVEL107_RESULTS: "${{ steps.level107.outputs.result }}"
+          LEVEL108_RESULTS: "${{ steps.level108.outputs.result }}"
+          LEVEL109_RESULTS: "${{ steps.level109.outputs.result }}"
+          LEVEL110_RESULTS: "${{ steps.level110.outputs.result }}"
+          LEVEL201_RESULTS: "${{ steps.level201.outputs.result }}"
+          LEVEL202_RESULTS: "${{ steps.level202.outputs.result }}"
+          LEVEL203_RESULTS: "${{ steps.level203.outputs.result }}"
+          LEVEL204_RESULTS: "${{ steps.level204.outputs.result }}"
+          LEVEL205_RESULTS: "${{ steps.level205.outputs.result }}"
+          LEVEL206_RESULTS: "${{ steps.level206.outputs.result }}"
+          LEVEL207_RESULTS: "${{ steps.level207.outputs.result }}"
+          LEVEL208_RESULTS: "${{ steps.level208.outputs.result }}"
+          LEVEL209_RESULTS: "${{ steps.level209.outputs.result }}"
+          LEVEL210_RESULTS: "${{ steps.level210.outputs.result }}"
+          LEVEL301_RESULTS: "${{ steps.level301.outputs.result }}"
+          LEVEL302_RESULTS: "${{ steps.level302.outputs.result }}"
+          LEVEL303_RESULTS: "${{ steps.level303.outputs.result }}"
+          LEVEL304_RESULTS: "${{ steps.level304.outputs.result }}"
+          LEVEL305_RESULTS: "${{ steps.level305.outputs.result }}"
+          LEVEL306_RESULTS: "${{ steps.level306.outputs.result }}"
+          LEVEL307_RESULTS: "${{ steps.level307.outputs.result }}"
+          LEVEL308_RESULTS: "${{ steps.level308.outputs.result }}"
+          LEVEL309_RESULTS: "${{ steps.level309.outputs.result }}"
+          LEVEL310_RESULTS: "${{ steps.level310.outputs.result }}"
         with:
-          runners: level1,level2,level3
-
-
+          runners: level101,level102,level103,level104,level105,level106,level107,level108,level109,level110,level201,level202,level203,level204,level205,level206,level207,level208,level209,level210,level301,level302,level303,level304,level305,level306,level307,level308,level309,level310

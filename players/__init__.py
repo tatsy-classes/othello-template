@@ -1,2 +1,4 @@
+from .random import RandomPlayer
 from .minimax import MinimaxPlayer
-from .randomize import RandomPlayer
+
+__all__ = ["MinimaxPlayer", "RandomPlayer"]

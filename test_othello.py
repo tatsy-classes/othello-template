@@ -70,13 +70,15 @@ def game(p1_, p2_, n_match: int):
     return n_win1, n_win2
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("player_1", type=str)
-    parser.add_argument("player_2", type=str)
-    parser.add_argument("--n_match", type=int, default=100)
-    args = parser.parse_args()
+def test_random(n_match: int):
+    p1 = MyPlayer()
+    p2 = RandomPlayer()
+    n_win1, n_win2 = game(p1, p2, n_match)
+    assert n_win1 > n_win2, "You lose to RandomPlayer"
 
-    p1 = eval(args.player_1)()
-    p2 = eval(args.player_2)()
-    game(p1, p2, args.n_match)
+
+def test_minimax(n_match: int):
+    p1 = MyPlayer()
+    p2 = MinimaxPlayer()
+    n_win1, n_win2 = game(p1, p2, n_match)
+    assert n_win1 > n_win2, "You lose to MinimaxPlayer"
