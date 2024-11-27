@@ -32,6 +32,11 @@ def game(p1_, p2_, n_match: int):
             p2 = p1_
 
         while not env.is_done():
+            actions = env.legal_actions()
+            if len(actions) == 0:
+                env.turn_change()
+                continue
+
             if env.player.is_black():
                 action = p1.play(env)
             elif env.player.is_white():
